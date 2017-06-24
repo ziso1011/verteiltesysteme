@@ -51,39 +51,51 @@ function GeoTagObj(latitude, longitude, name, hashtag) {
  * - Funktion zum Löschen eines Geo Tags.
  */
  
- var GeoTagModul = {
-	 geoTagArray: null,
+ 
+ var GeoTagModul = ( function() {
+	 geoTagArray = [];
 	 
-	 searchRadius: function(latitude, longitude, radius) {
-		geoTagResult: null;
-		for(var i = 0; i < geoTagArray.length; i++) {
-			if( true ) { //berechnung von radius 
-				geoTagResult.push(GeoTagObj[i]);
-			}
-		}
-		return geoTagResult;
-	 },
-	 
-	 searchName: function(name) {
-		geoTagResult: null;
-		for(var i = 0; i < geoTagArray.length; i++) {
-			if( geoTagArray[i].name == name ) { //Suche nach namen 
-				geoTagResult.push(GeoTagObj[i]);
-			}
-		}
-		return geoTagResult;
-	 },
-	 
-	 add: function(latitude, longitude, name, hashtag) {
-		 geoTagArray.push(new GeoTagObj(latitude, longitude, name, hashtag));
-	 },
-	 
-	 remove: function(index) {
-		 if (index > -1 && index < geoTagArray.length) {
-			geoTagArray.splice(index, 1);
-		}
+	 //Fehler: Aktuelles Element wird nicht ausgegeben
+	 var isInRadius = function(lat1, long1, lat2, long2, radius) {
+		return radius >= Math.sqrt( Math.pow(lat1 - lat2, 2) 
+								+ Math.pow(long1 - long2, 2)
+								)
 	 }
- }
+	 
+	 return {
+		 //Hier ist der Fehler definiert
+		 searchRadius: function(latitude, longitude, radius) {
+			geoTagResult = [];
+			for(var i = 0; i < geoTagArray.length; i++) {
+				if( isInRadius(latitude, longitude, geoTagArray[i].latitude, geoTagArray[i].longitude, radius) ) {
+					geoTagResult.push(new GeoTagObj(geoTagArray[i].latitude, geoTagArray[i].longitude, geoTagArray[i].name, geoTagArray[i].hashtag));
+				}
+			}
+			return geoTagResult;
+		 },
+		 
+		 searchName: function(name) {
+			geoTagResult = [];
+			for(var i = 0; i < geoTagArray.length; i++) {
+				if( geoTagArray[i].name == name ) {
+					geoTagResult.push(new GeoTagObj(geoTagArray[i].latitude, geoTagArray[i].longitude, geoTagArray[i].name, geoTagArray[i].hashtag));
+				}
+			}
+			return geoTagResult;
+		 },
+		 
+		 add: function(latitude, longitude, name, hashtag) {
+			geoTagArray.push(new GeoTagObj(latitude, longitude, name, hashtag));
+			console.log(geoTagArray[geoTagArray.length-1]);
+		 },
+		 
+		 remove: function(index) {
+			 if (index >= 0 && index < geoTagArray.length) {
+				geoTagArray.splice(index, 1);
+			}
+		 }
+	 };
+ })();
 
 /**
  * Route mit Pfad '/' für HTTP 'GET' Requests.
@@ -96,7 +108,9 @@ function GeoTagObj(latitude, longitude, name, hashtag) {
 
 app.get('/', function(req, res) {
     res.render('gta', {
-        taglist: []
+        taglist: [],
+		latitude: "",
+		longitude: ""
     });
 });
 
@@ -113,7 +127,14 @@ app.get('/', function(req, res) {
  * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
  */
 
-// TODO: CODE ERGÄNZEN START
+app.post('/tagging', function(req, res) {
+	GeoTagModul.add(req.body.latitude, req.body.longitude, req.body.name, req.body.hashtag);
+    res.render('gta', {
+        taglist: GeoTagModul.searchRadius(req.body.latitude, req.body.longitude, 0.01),
+		latitude: req.body.latitude,
+		longitude: req.body.longitude
+    });
+});
 
 /**
  * Route mit Pfad '/discovery' für HTTP 'POST' Requests.
@@ -126,8 +147,27 @@ app.get('/', function(req, res) {
  * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
  * Falls 'term' vorhanden ist, wird nach Suchwort gefiltert.
  */
+ 
+app.post('/discovery', function(req, res) {
 
-// TODO: CODE ERGÄNZEN
+    res.render('gta', {
+        taglist: GeoTagModul.searchName(req.body.searchterm),
+		latitude: "",
+		longitude: ""
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Setze Port und speichere in Express.

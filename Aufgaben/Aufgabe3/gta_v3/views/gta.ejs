@@ -30,9 +30,9 @@
 						<form id="tag-form" action="/tagging" method="post">
 							<fieldset><legend>Enter new GeoTag</legend>
 								<label for="tag-form-latitude">latitude</label><br />
-								<input id="tag-form-latitude" name="latitude" type="text" placeholder="48.782" required /><br />
+								<input id="tag-form-latitude" name="latitude" type="text" placeholder="48.782" value="<%= latitude %>" required /><br />
 								<label for="tag-form-longitude">longitude</label><br />
-								<input id="tag-form-longitude" name="longitude" type="text" placeholder="9.134" required /><br />
+								<input id="tag-form-longitude" name="longitude" type="text" placeholder="9.134" value="<%= longitude %>" required /><br />
 								<label for="tag-form-name">name</label><br />
 								<input id="tag-form-name" name="name" type="text" maxlength="10" placeholder="some name" required /><br />
 								<label for="tag-form-hashtag">hashtag</label><br />
@@ -53,8 +53,8 @@
 						<form id="filter-form" action="/discovery" method="post">
 							<fieldset><legend>Filter by Searchterm</legend>
 								<input id="filter-form-searchterm" name="searchterm" type="text" placeholder="search term" />
-								<input id="filter-form-latitude" name="latitude" type="hidden" />
-								<input id="filter-form-longitude" name="longitude" type="hidden" />
+								<input id="filter-form-latitude" name="latitude" value="<%= latitude %>" type="hidden" />
+								<input id="filter-form-longitude" name="longitude" value="<%= longitude %>" type="hidden" />
 								<button>Apply</button>
 								<button>Remove</button>
 							</fieldset>

@@ -50,12 +50,18 @@ var gtaLocator = (function GtaLocator() {
 
     // Auslesen Breitengrad aus der Position
     var getLatitude = function (position) {
-        return position.coords.latitude;
+		if(document.getElementById("tag-form-latitude").value == "")
+			return position.coords.latitude;
+		else
+			return document.getElementById("tag-form-latitude").value;
     };
 
     // Auslesen Längengrad aus Position
     var getLongitude = function (position) {
-        return position.coords.longitude;
+		if(document.getElementById("tag-form-longitude").value == "")
+			return position.coords.longitude;
+		else
+			return document.getElementById("tag-form-longitude").value;
     };
 
     // Hier Google Maps API Key eintragen
