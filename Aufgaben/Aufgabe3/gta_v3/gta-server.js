@@ -54,8 +54,7 @@ function GeoTagObj(latitude, longitude, name, hashtag) {
  
  var GeoTagModul = ( function() {
 	 geoTagArray = [];
-	 
-	 //Fehler: Aktuelles Element wird nicht ausgegeben
+
 	 var isInRadius = function(lat1, long1, lat2, long2, radius) {
 		return radius >= Math.sqrt( Math.pow(lat1 - lat2, 2) 
 								+ Math.pow(long1 - long2, 2)
@@ -63,7 +62,6 @@ function GeoTagObj(latitude, longitude, name, hashtag) {
 	 }
 	 
 	 return {
-		 //Hier ist der Fehler definiert
 		 searchRadius: function(latitude, longitude, radius) {
 			geoTagResult = [];
 			for(var i = 0; i < geoTagArray.length; i++) {
@@ -86,13 +84,15 @@ function GeoTagObj(latitude, longitude, name, hashtag) {
 		 
 		 add: function(latitude, longitude, name, hashtag) {
 			geoTagArray.push(new GeoTagObj(latitude, longitude, name, hashtag));
-			console.log(geoTagArray[geoTagArray.length-1]);
 		 },
 		 
-		 remove: function(index) {
-			 if (index >= 0 && index < geoTagArray.length) {
-				geoTagArray.splice(index, 1);
-			}
+		 remove: function(name) {
+             for(var i = 0; i < geoTagArray.length; i++) {
+                 if( geoTagArray[i].name == name ) {
+                 	geoTagArray.splice(i, 1);
+                 	i--;
+                 }
+             }
 		 }
 	 };
  })();
@@ -150,6 +150,9 @@ app.post('/tagging', function(req, res) {
  
 app.post('/discovery', function(req, res) {
 
+    if(req.body.remove != undefined) {
+        GeoTagModul.remove(req.body.searchterm);
+	}
     res.render('gta', {
         taglist: GeoTagModul.searchName(req.body.searchterm),
 		latitude: "",
